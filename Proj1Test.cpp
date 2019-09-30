@@ -132,7 +132,7 @@ int main() {
     //Step 7: Add even more items, to cause merges
     cout << "\n\nStep 7: add items to cause merges." << endl;
 
-    for (int i = 21; i <= 101; i++) {
+    for (unsigned int i = 21; i <= 101; i++) {
         sqrList.addLast(i);
     }
 
@@ -161,6 +161,14 @@ int main() {
     }
 
     cout << "After Step 9:" << endl;
+
+//  TODO:  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+
+//    sqrList.addLast(1); sqrList.addLast(2); sqrList.addLast(3); sqrList.addLast(4); sqrList.addLast(5);
+//    sqrList.addLast(6); sqrList.addLast(7); sqrList.addLast(8); sqrList.addLast(9); sqrList.addLast(10);
+//    sqrList.addLast(11); sqrList.addLast(12); sqrList.addLast(13); sqrList.addLast(14); sqrList.addLast(15);
+//    sqrList.addLast(16); sqrList.addLast(17); sqrList.addLast(18); sqrList.addLast(19); sqrList.addLast(20);
+
     cout << "DATA DUMP" << endl;
     sqrList.dump();
 

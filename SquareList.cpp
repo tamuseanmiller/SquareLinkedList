@@ -19,37 +19,58 @@ SquareList::~SquareList() {
 // Makes sure the Square List is able to be quickly traversed
 void SquareList::consolidate() {
 
+    double shorter = sqrt(size() / 2);
+    double longer = 2 * sqrt(size());
+
+
     // iterator for loop
     for (auto i = inners.begin(); i != inners.end(); i++) {
+
+        auto k = i;
+        k++;
 
         // Checks for empty inner list
         if (i->sizeOfThisInnerList() == 0) {
             i->clean();
             inners.erase(i++);
 
-            // Skip the first iteration since I'm using previous
-        } else if (i == inners.begin()) {
-            continue;
+        // Skip the last iteration since I'm using the next value
+        } else if (i->getHeader() == inners.back().getHeader()) {
+            break;
 
-            // Checks for two short lists
-        } else if (((std::prev(i)->sizeOfThisInnerList() + i->sizeOfThisInnerList()) <= (sqrt(size()) / 2)) &&
-                   (size() != 1)) {
-            std::prev(i)->merge(*i);
-            i->clean();
-            inners.erase(i++);
+        // Checks for two short lists
+        } else if ((k->sizeOfThisInnerList() <= shorter) && (i->sizeOfThisInnerList() <= shorter) &&
+                   (size() != 2) && (size() != 1)) {
 
-            // Checks for lists that are too long
-        } else if (i->sizeOfThisInnerList() > 2 * sqrt(size()) && (size() > 2)) {
-            auto *current = new InnerSquareList;
-            for (unsigned int j = 0; j < i->sizeOfThisInnerList() / 2; j++) {
-                current->addLast(i->get(j));
-                i->remove(j);
+            auto m = k;
+
+            // Check for if 3 short lists are in a row
+            if(k->getHeader() != inners.back().getHeader()) {
+                m++;
+                if(m->sizeOfThisInnerList() <= shorter) {
+                    i->merge(*k);
+                    i->merge(*m);
+                    m->clean();
+                    inners.erase(m++);
+                    k->clean();
+                    inners.erase(k++);
+                    consolidate();
+                    break;
+                }
             }
-            inners.insert(i, *current);
+
+            i->merge(*k);
+            k->clean();
+            inners.erase(k++);
+            consolidate();
+
+        // Checks for lists that are too long
+        } else if ((i->sizeOfThisInnerList() > longer) && (size() > 2)) {
+
+            inners.insert(++i, i->split());
             consolidate();
         }
     }
-
 }
 
 // Adds a value to the inner list at the front
@@ -78,14 +99,37 @@ void SquareList::add(int pos, int data) {
     if (size() < pos) {
         std::cout << "Error with position inputted!";
     }
+
+    // Declare variables
     unsigned int cnt = 0;
-    for (auto i = inners.begin(); i != inners.end(); i++) {
-        if (cnt == pos) {
-            i->add(0, data);
-        }
-        cnt++;
+    unsigned int cnt2 = 0;
+
+    // To save time
+    if (pos == this->size() - 1) {
+        inners.back().add(inners.back().sizeOfThisInnerList() - 1, data);
+        consolidate();
+        return;
+    } else if (pos == 0) {
+        inners.front().add(0, data);
+        consolidate();
+        return;
+    } else if (pos < inners.front().sizeOfThisInnerList()) {
+        inners.front().add(pos, data);
+        consolidate();
+        return;
     }
-    consolidate();
+
+    // Traverses through inners and checks to see if the position exists, then removes it.
+    for (auto i = inners.begin(); i != inners.end(); i++) {
+        cnt += i->sizeOfThisInnerList();
+        if (pos < cnt) {
+            i->add(pos - cnt2 - 1, data);
+            consolidate();
+            break;
+        }
+        cnt2 = cnt - 1;
+    }
+
 }
 
 // Traverses through the inner linked lists and returns the value at pos, if it is in that inner list and removes it
@@ -98,19 +142,32 @@ int SquareList::remove(int pos) {
     // Declare variables
     unsigned int cnt = 0;
     unsigned int final = 0;
-    unsigned int max = 0;
+    unsigned int cnt2 = 0;
+
+    // To save time
+    if (pos == this->size() - 1) {
+        final = inners.back().remove(inners.back().sizeOfThisInnerList() - 1);
+        consolidate();
+        return final;
+    } else if (pos == 0) {
+        final = inners.front().remove(0);
+        consolidate();
+        return final;
+    } else if (pos < inners.front().sizeOfThisInnerList()) {
+        final = inners.front().remove(pos);
+        consolidate();
+        return final;
+    }
 
     // Traverses through inners and checks to see if the position exists, then removes it.
     for (auto i = inners.begin(); i != inners.end(); i++) {
-        if (pos > i->sizeOfThisInnerList())
-            cnt += i->sizeOfThisInnerList();
-        if (pos <= cnt) {
-            final = i->remove(cnt - pos);
+        cnt += i->sizeOfThisInnerList();
+        if (pos < cnt) {
+            final = i->remove(pos - cnt2 - 1);
             consolidate();
             return final;
         }
-        if (pos <= i->sizeOfThisInnerList())
-            cnt += i->sizeOfThisInnerList();
+        cnt2 = cnt - 1;
     }
     return 0;
 }
@@ -124,21 +181,29 @@ int SquareList::get(int pos) {
     }
 
     // Declare variables
-    unsigned int max = 0;
     unsigned int cnt = 0;
     unsigned int cnt2 = 0;
+
+//  To save time
+    if (pos == this->size() - 1) {
+        return inners.back().get(inners.back().sizeOfThisInnerList() - 1);
+    } else if (pos == 0) {
+        return inners.front().get(0);
+    } else if (pos < inners.front().sizeOfThisInnerList()) {
+        return inners.front().get(pos);
+    }
+
+//    1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+//    1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+
 
     // Loops through and returns the value at a certain position
     for (auto i = inners.begin(); i != inners.end(); i++) {
         cnt += i->sizeOfThisInnerList();
-        if (i->sizeOfThisInnerList() > max)
-            max = i->sizeOfThisInnerList();
-        if (pos < cnt && max*cnt <= pos) { // TODO: Literally doesn't work
-            return i->get(pos - max * cnt2);
-        } else if (pos < cnt) {
-
+        if (cnt > pos) {
+            return i->get(pos - cnt2 - 1);
         }
-        cnt2++;
+        cnt2 = cnt - 1;
     }
     return 0;
 }
@@ -153,18 +218,27 @@ void SquareList::set(int pos, int data) {
     // Declare variables
     unsigned int cnt = 0;
     unsigned int cnt2 = 0;
-    unsigned int max = 0;
+
+    // To save time
+    if (pos == this->size() - 1) {
+        inners.back().set(inners.back().sizeOfThisInnerList() - 1, data);
+        return;
+    } else if (pos == 0) {
+        inners.front().set(0, data);
+        return;
+    } else if (pos < inners.front().sizeOfThisInnerList()) {
+        inners.front().set(pos, data);
+        return;
+    }
 
     // Loops through and sets the value at the position given
     for (auto i = inners.begin(); i != inners.end(); i++) {
         cnt += i->sizeOfThisInnerList();
-        if (i->sizeOfThisInnerList() > max)
-            max = i->sizeOfThisInnerList();
         if (pos < cnt) {
-            i->set(pos - max * cnt2, data);
+            i->set(pos - cnt2 - 1, data);
             break;
         }
-        cnt2++;
+        cnt2 = cnt - 1;
     }
 }
 
@@ -188,5 +262,20 @@ int SquareList::indexOf(int data) {
 }
 
 void SquareList::dump() {
+    unsigned int cnt = 0;
+    for (auto i = inners.begin(); i != inners.end(); i++) {
+        cnt++;
+    }
 
+    std::cout << "*********************************************************" << std::endl;
+    std::cout << "SquareList dump:" << std::endl;
+    std::cout << "Total size = " << size() << ", # of lists = " << cnt << std::endl;
+    for (auto i = inners.begin(); i != inners.end(); i++) {
+        std::cout << "=========================================================" << std::endl;
+        std::cout << "InnerList dump:" << std::endl;
+        std::cout << "size = " << i->sizeOfThisInnerList() << std::endl;
+        consolidate();
+        i->dump();
+        std::cout << "\ntail.data = " << i->getTail()->value << std::endl;
+    }
 }

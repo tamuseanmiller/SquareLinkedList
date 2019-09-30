@@ -8,6 +8,7 @@
 
 using namespace std;
 
+#include <climits>
 #include "InnerSquareList.h"
 
 // Get Method for m_head
@@ -45,6 +46,7 @@ void InnerSquareList::clean() {
 
 //  Traverses from the head to the tail and clears and deletes every node
     while (temp != nullptr and m_head != m_tail) {
+        temp = m_head;
         m_head = m_head->next;
         delete temp;
         temp = m_head->next;
@@ -121,7 +123,7 @@ void InnerSquareList::addLast(int data) {
     auto *newNode = new tagNode;
 
 //  Checks to see if head is equal to tail
-    if (m_length == 1) {
+    if (m_length == 1 or m_length >= 1000000000) {
         newNode->value = data;
         newNode->next = nullptr;
         m_head = newNode;
@@ -187,7 +189,7 @@ int InnerSquareList::remove(int pos) {
 // Method that returns the value at a specific position
 int InnerSquareList::get(int pos) const {
     // Check
-    if (pos >= sizeOfThisInnerList()) {
+    if (pos > sizeOfThisInnerList()) {
         cout << "Error: Wrong position" << endl;
         return 0;
     }
@@ -216,31 +218,15 @@ void InnerSquareList::set(int pos, int data) {
 
 //  Declare variables and objects
     tagNode *current = m_head;
-    tagNode *previous = current;
-    auto *newNode = new tagNode;
-
-//  Checks for if the position is equal to the head
-    if (pos == 0) {
-        newNode->value = data;
-        newNode->next = m_head;
-        m_head = newNode;
-        return;
-    }
 
 //  Loops through list until position is met, then reallocates the data to newNode and discards the old node.
-//  Chose to do it this way for practice
     for (int i = 0; i < sizeOfThisInnerList(); i++) {
         if (i == pos) {
-            newNode->value = data;
-            previous->next = newNode;
-            newNode->next = current;
-            previous = nullptr;
+            current->value = data;
             current = nullptr;
-            delete previous;
             delete current;
             break;
         }
-        previous = current;
         current = current->next;
     }
 }
@@ -265,7 +251,7 @@ int InnerSquareList::indexOf(int data) const {
         cnt++;
         current = current->next;
     }
-    return 0;
+    return -1;
 }
 
 // Merges two lists into one
@@ -278,10 +264,28 @@ void InnerSquareList::merge(InnerSquareList &isl) {
 }
 
 
-InnerSquareList InnerSquareList::split() {
-    return InnerSquareList();
+InnerSquareList &InnerSquareList::split() { // TODO : TAKE AWAY THE DEREFERENCE OPERATOR
+    auto *newInn = new InnerSquareList;
+    tagNode *current = m_head;
+    for (int i = 0; i < m_length; i++) {
+        if (i >= m_length / 2) {
+            newInn->addLast(current->value);
+            current = current->next;
+            remove(i);
+            i--;
+            continue;
+        }
+        current = current->next;
+    }
+    return *newInn;
 }
 
 void InnerSquareList::dump() {
-
+    auto *current = m_head;
+    while (current != nullptr) {
+        cout << "[" << current->value << "]";
+        current = current->next;
+    }
+    current = nullptr;
+    delete current;
 }

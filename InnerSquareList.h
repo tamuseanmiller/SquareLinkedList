@@ -77,9 +77,9 @@ public:
 
     //split an inner list at mid point, return the second half
     //the first half should be the same, or one element less thant the second half
-    InnerSquareList split();
+    InnerSquareList &split();
 
-    //print of all node values and the last node in O(1)
+    //print of all node values and the last node in O(n)
     //check the sample output for format
     void dump();
 };
