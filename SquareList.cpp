@@ -91,7 +91,7 @@ void SquareList::addLast(int data) {
 
 // Removes the first inner list
 int SquareList::removeFirst() {
-    remove(0);
+    return remove(0);
 }
 
 void SquareList::add(int pos, int data) {
@@ -101,8 +101,8 @@ void SquareList::add(int pos, int data) {
     }
 
     // Declare variables
-    unsigned int cnt = 0;
-    unsigned int cnt2 = 0;
+    int cnt = 0;
+    int cnt2 = 0;
 
     // To save time
     if (pos == this->size() - 1) {
@@ -140,9 +140,9 @@ int SquareList::remove(int pos) {
     }
 
     // Declare variables
-    unsigned int cnt = 0;
-    unsigned int final = 0;
-    unsigned int cnt2 = 0;
+    int cnt = 0;
+    int final = 0;
+    int cnt2 = 0;
 
     // To save time
     if (pos == this->size() - 1) {
@@ -181,8 +181,8 @@ int SquareList::get(int pos) {
     }
 
     // Declare variables
-    unsigned int cnt = 0;
-    unsigned int cnt2 = 0;
+    int cnt = 0;
+    int cnt2 = 0;
 
 //  To save time
     if (pos == this->size() - 1) {
@@ -216,8 +216,8 @@ void SquareList::set(int pos, int data) {
     }
 
     // Declare variables
-    unsigned int cnt = 0;
-    unsigned int cnt2 = 0;
+    int cnt = 0;
+    int cnt2 = 0;
 
     // To save time
     if (pos == this->size() - 1) {
@@ -244,7 +244,7 @@ void SquareList::set(int pos, int data) {
 
 // Traverses through inners and returns the size of all of the elements in inners
 int SquareList::size() {
-    unsigned int cnt = 0;
+    int cnt = 0;
     for (auto i = inners.begin(); i != inners.end(); i++) {
         cnt += i->sizeOfThisInnerList();
     }
@@ -262,7 +262,7 @@ int SquareList::indexOf(int data) {
 }
 
 void SquareList::dump() {
-    unsigned int cnt = 0;
+    int cnt = 0;
     for (auto i = inners.begin(); i != inners.end(); i++) {
         cnt++;
     }

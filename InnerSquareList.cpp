@@ -36,9 +36,7 @@ InnerSquareList::InnerSquareList(Node *header, Node *tail, size_t length) {
 }
 
 // Destructor
-InnerSquareList::~InnerSquareList() {
-    clean();
-}
+InnerSquareList::~InnerSquareList() = default;
 
 // Clears out LinkedList and clears memory
 void InnerSquareList::clean() {
@@ -67,7 +65,7 @@ void InnerSquareList::add(int pos, int data) {
     m_length++;
 
 //    Traverse to the position and set value
-    unsigned int cnt = 0;
+    int cnt = 0;
     auto *newNode = new tagNode;
     newNode->value = data;
     tagNode *current = m_head;
@@ -144,7 +142,7 @@ int InnerSquareList::remove(int pos) {
     }
 
 //  Initializes variables and objects
-    unsigned int cnt = 0;
+    int cnt = 0;
     tagNode *current = m_head;
     tagNode *previous = current;
 
@@ -184,6 +182,7 @@ int InnerSquareList::remove(int pos) {
         previous = current;
         current = current->next;
     }
+    return -1;
 }
 
 // Method that returns the value at a specific position
@@ -195,7 +194,7 @@ int InnerSquareList::get(int pos) const {
     }
 
 //  Initializes variables and objects
-    unsigned cnt = 0;
+    int cnt = 0;
     tagNode *current = m_head;
 
 //  Loops through until position is reached, then returns the value
@@ -239,7 +238,7 @@ int InnerSquareList::sizeOfThisInnerList() const {
 // Returns the index of the place where the data is stored
 int InnerSquareList::indexOf(int data) const {
     tagNode *current = m_head;
-    unsigned int cnt = 0;
+    int cnt = 0;
 
 //  Loops through and checks to see if the value is equal to the data parameter
     while (current != nullptr) {
@@ -264,10 +263,10 @@ void InnerSquareList::merge(InnerSquareList &isl) {
 }
 
 
-InnerSquareList &InnerSquareList::split() { // TODO : TAKE AWAY THE DEREFERENCE OPERATOR
+InnerSquareList InnerSquareList::split() {
     auto *newInn = new InnerSquareList;
     tagNode *current = m_head;
-    for (int i = 0; i < m_length; i++) {
+    for (unsigned int i = 0; i < m_length; i++) {
         if (i >= m_length / 2) {
             newInn->addLast(current->value);
             current = current->next;
